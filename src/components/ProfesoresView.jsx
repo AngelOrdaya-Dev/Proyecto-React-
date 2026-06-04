@@ -83,19 +83,19 @@ const ProfesoresView = () => {
 
               <div className="col-md-6 d-flex gap-2 justify-content-md-end align-items-center">
                 <button 
-                  className={`btn filter-btn btn-light ${activeFilter === 'All' ? 'active' : ''}`}
+                  className={`btn filter-btn ${activeFilter === 'All' ? 'active' : ''}`}
                   onClick={() => setActiveFilter('All')}
                 >
                   Todos
                 </button>
                 <button 
-                  className={`btn filter-btn btn-light ${activeFilter === 'activo' ? 'active' : ''}`}
+                  className={`btn filter-btn ${activeFilter === 'activo' ? 'active' : ''}`}
                   onClick={() => setActiveFilter('activo')}
                 >
                   Activos
                 </button>
                 <button 
-                  className={`btn filter-btn btn-light ${activeFilter === 'inactivo' ? 'active' : ''}`}
+                  className={`btn filter-btn ${activeFilter === 'inactivo' ? 'active' : ''}`}
                   onClick={() => setActiveFilter('inactivo')}
                 >
                   Inactivos

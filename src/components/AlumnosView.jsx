@@ -81,19 +81,19 @@ const AlumnosView = () => {
 
               <div className="col-md-6 d-flex gap-2 justify-content-md-end align-items-center">
                 <button 
-                  className={`btn filter-btn btn-light ${activeFilter === 'All' ? 'active' : ''}`}
+                  className={`btn filter-btn ${activeFilter === 'All' ? 'active' : ''}`}
                   onClick={() => setActiveFilter('All')}
                 >
                   Todos
                 </button>
                 <button 
-                  className={`btn filter-btn btn-light ${activeFilter === 'matriculado' ? 'active' : ''}`}
+                  className={`btn filter-btn ${activeFilter === 'matriculado' ? 'active' : ''}`}
                   onClick={() => setActiveFilter('matriculado')}
                 >
                   Matriculados
                 </button>
                 <button 
-                  className={`btn filter-btn btn-light ${activeFilter === 'inactivo' ? 'active' : ''}`}
+                  className={`btn filter-btn ${activeFilter === 'inactivo' ? 'active' : ''}`}
                   onClick={() => setActiveFilter('inactivo')}
                 >
                   Inactivos
