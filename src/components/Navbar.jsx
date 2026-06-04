@@ -25,9 +25,9 @@ const NavigationBar = ({ setVistaActual, vistaActual }) => {
     }, []);
 
     const statusLabel = {
-        online: 'NETWORK: SECURE',
-        offline: 'NETWORK: DISCONNECTED',
-        checking: 'NETWORK: SCANNING'
+        online: 'API: ACTIVA',
+        offline: 'API: INACTIVA',
+        checking: 'API: COMPROBANDO'
     };
 
     return (
@@ -37,7 +37,7 @@ const NavigationBar = ({ setVistaActual, vistaActual }) => {
                     <div className="avatar-circle d-flex align-items-center justify-content-center" style={{width: '40px', height: '40px', fontSize: '1.2rem', background: 'var(--primary-gradient)'}}>
                         <i className="fas fa-bolt text-white"></i>
                     </div>
-                    <span>NEXUS EDU</span>
+                    <span>CAMPUS ANGEL</span>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
