@@ -1,0 +1,145 @@
+import { useState, useEffect } from 'react';
+import CursoCard from './CursoCard';
+import CursoForm from './CursoForm';
+import Contador from './Contador';
+import SkeletonGrid from './SkeletonGrid';
+import { API_BASE } from '../config';
+
+const CursosView = () => {
+  const [cursos, setCursos] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [cargando, setCargando] = useState(false);
+  const [cursoEditando, setCursoEditando] = useState(null);
+
+  const obtenerCursos = async () => {
+    setCargando(true);
+    try {
+      const respuesta = await fetch(`${API_BASE}/cursos`);
+      const datos = await respuesta.json();
+      setCursos(datos.data || datos);
+    } catch (error) {
+      console.error('Error al obtener los cursos:', error);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  useEffect(() => {
+    obtenerCursos();
+  }, []);
+
+  const totalCursos = cursos.length;
+  const totalActivos = cursos.filter(c => c.estado?.toLowerCase() === 'activo').length;
+  const totalInactivos = cursos.filter(c => c.estado?.toLowerCase() !== 'activo').length;
+
+  const filteredCursos = cursos.filter(curso => {
+    const matchesSearch = curso.nombre_curso?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (activeFilter === 'All') return matchesSearch;
+    if (activeFilter === 'activo') return matchesSearch && curso.estado?.toLowerCase() === 'activo';
+    return matchesSearch && curso.estado?.toLowerCase() !== 'activo';
+  });
+
+  return (
+    <div className="container py-4">
+      <div className="mb-4">
+        <h1 className="fw-bold text-white m-0" style={{fontFamily: 'Outfit', fontSize: '2rem', letterSpacing: '-0.03em'}}>Catálogo de Programas</h1>
+        <p className="text-muted m-0 mt-1">Operaciones en tiempo real — React + Laravel + MySQL</p>
+      </div>
+
+      <Contador 
+        totalAlumnos={totalCursos}
+        totalMatriculados={totalActivos}
+        totalPendientes={totalInactivos}
+        labelTotal="Total Cursos"
+        labelActivos="Activos"
+        labelInactivos="Inactivos"
+      />
+
+      <div className="row g-4">
+        <div className="col-lg-8">
+          <div className="control-bar mb-4">
+            <div className="row g-3">
+              <div className="col-md-6">
+                <div className="search-input-wrapper">
+                  <span className="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </span>
+                  <input 
+                    type="text" 
+                    className="form-control search-input" 
+                    placeholder="Buscar por nombre de curso..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-6 d-flex gap-2 justify-content-md-end align-items-center">
+                <button 
+                  className={`btn filter-btn btn-light ${activeFilter === 'All' ? 'active' : ''}`}
+                  onClick={() => setActiveFilter('All')}
+                >
+                  Todos
+                </button>
+                <button 
+                  className={`btn filter-btn btn-light ${activeFilter === 'activo' ? 'active' : ''}`}
+                  onClick={() => setActiveFilter('activo')}
+                >
+                  Activos
+                </button>
+                <button 
+                  className={`btn filter-btn btn-light ${activeFilter === 'inactivo' ? 'active' : ''}`}
+                  onClick={() => setActiveFilter('inactivo')}
+                >
+                  Inactivos
+                </button>
+              </div>
+            </div>
+          </div>
+
+           {cargando ? (
+             <SkeletonGrid count={6} />
+           ) : (
+             <div className="row">
+                {filteredCursos.length > 0 ? (
+                  filteredCursos.map(curso => (
+                    <CursoCard
+                      key={curso.id_curso || curso.id}
+                      curso={curso}
+                      alEliminar={obtenerCursos}
+                      alEditar={() => setCursoEditando(curso)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-12">
+                    <div className="empty-state">
+                      <div className="empty-state-icon">📚</div>
+                      <h5>No se encontraron cursos</h5>
+                    </div>
+                  </div>
+                )}
+             </div>
+           )}
+
+        </div>
+
+        <div className="col-lg-4">
+          <div className="sticky-top" style={{ top: '90px', zIndex: 1 }}>
+            <CursoForm 
+              recargarCursos={obtenerCursos} 
+              cursoEditando={cursoEditando}
+              cancelarEdicion={() => setCursoEditando(null)}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CursosView;

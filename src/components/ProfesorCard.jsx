@@ -2,66 +2,65 @@ import { useState, useEffect } from 'react';
 import { mostrarToast } from '../App';
 import { API_BASE } from '../config';
 
-// src/components/AlumnoCard.jsx
-const AlumnoCard = ({ alumno, alEliminar, alEditar }) => {
-    const id = alumno.id_alumno || alumno.id;
-    const nombre = `${alumno.nombre} ${alumno.apellidos}`;
-    const carrera = alumno.email;
-    const estadoInicial = alumno.estado_matricula;
-    const icono = alumno.icono;
+const ProfesorCard = ({ profesor, alEliminar, alEditar }) => {
+    const id = profesor.id_profesor || profesor.id;
+    const nombre = `${profesor.nombre} ${profesor.apellidos}`;
+    const especialidad = profesor.especialidad;
+    const estadoInicial = profesor.estado;
+    const icono = profesor.icono;
 
-    const [estado, setEstado] = useState(estadoInicial || 'inactivo');
+    const [estado, setEstado] = useState(estadoInicial || 'activo');
 
-    // Sync state if it changes in database
     useEffect(() => {
-        setEstado(estadoInicial || 'inactivo');
+        setEstado(estadoInicial || 'activo');
     }, [estadoInicial]);
 
-    const isMatriculado = (estado || '').toLowerCase() === 'matriculado';
-    const badgeClass = isMatriculado
+    const isActivo = (estado || '').toLowerCase() === 'activo';
+    const badgeClass = isActivo
         ? 'status-badge status-badge-matriculado'
         : 'status-badge status-badge-pendiente';
 
-    // Alternar estado directamente en la base de datos
     const cambiarEstado = async () => {
-        const nuevoEstado = isMatriculado ? 'inactivo' : 'matriculado';
+        const nuevoEstado = isActivo ? 'inactivo' : 'activo';
         try {
-            const respuesta = await fetch(`${API_BASE}/alumnos/${id}`, {
+            const respuesta = await fetch(`${API_BASE}/profesores/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
-                    nombre: alumno.nombre,
-                    apellidos: alumno.apellidos,
-                    dni: alumno.dni,
-                    email: alumno.email,
-                    fecha_nacimiento: alumno.fecha_nacimiento,
-                    estado_matricula: nuevoEstado
+                    nombre: profesor.nombre,
+                    apellidos: profesor.apellidos,
+                    dni: profesor.dni,
+                    especialidad: profesor.especialidad,
+                    email: profesor.email,
+                    estado: nuevoEstado,
+                    fecha_nacimiento: '2000-01-01',
+                    estado_matricula: 'matriculado'
                 })
             });
             if (respuesta.ok) {
                 setEstado(nuevoEstado);
-                mostrarToast('Estado actualizado en la red', 'success');
+                mostrarToast('Estado sincronizado', 'success');
             } else {
                 mostrarToast('Error al sincronizar estado', 'danger');
             }
         } catch (error) {
             console.error(error);
-            mostrarToast('Error de conexión', 'danger');
+            mostrarToast('Error de red', 'danger');
         }
     };
 
     const manejarEliminar = async () => {
-        if (!window.confirm(`¿Purgar del sistema a ${nombre}?`)) return;
+        if (!window.confirm(`¿Purgar la cuenta de ${nombre}?`)) return;
         try {
-            const respuesta = await fetch(`${API_BASE}/alumnos/${id}`, {
+            const respuesta = await fetch(`${API_BASE}/profesores/${id}`, {
                 method: 'DELETE',
                 headers: { 'Accept': 'application/json' }
             });
             if (respuesta.ok) {
-                mostrarToast('Identidad eliminada correctamente', 'success');
+                mostrarToast('Instructor purgado exitosamente', 'success');
                 if (alEliminar) alEliminar();
             } else {
-                mostrarToast('Error en la eliminación', 'danger');
+                mostrarToast('Error en purga', 'danger');
             }
         } catch (error) {
             console.error(error);
@@ -69,17 +68,17 @@ const AlumnoCard = ({ alumno, alEliminar, alEditar }) => {
         }
     };
 
-    const studentIcons = ['👨‍🎓', '👩‍🎓', '🧑‍💻', '👩‍💻', '👨‍🔬', '👩‍🔬'];
+    const teacherIcons = ['👨‍🏫', '👩‍🏫', '👨‍🎨', '👩‍🎨', '👨‍💼', '👩‍💼'];
     const getDeterministicIcon = (str) => {
-        if (!str) return studentIcons[0];
+        if (!str) return teacherIcons[0];
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
             hash = str.charCodeAt(i) + ((hash << 5) - hash);
         }
-        return studentIcons[Math.abs(hash) % studentIcons.length];
+        return teacherIcons[Math.abs(hash) % teacherIcons.length];
     };
 
-    const displayIcon = localStorage.getItem(`avatar_alumno_${alumno.dni}`) || icono || getDeterministicIcon(nombre);
+    const displayIcon = localStorage.getItem(`avatar_profesor_${profesor.dni}`) || icono || getDeterministicIcon(nombre);
 
     return (
         <div className="col-md-6 col-lg-4 mb-4">
@@ -92,7 +91,7 @@ const AlumnoCard = ({ alumno, alEliminar, alEditar }) => {
                             </div>
                             <div style={{ minWidth: 0, flex: 1 }}>
                                 <h5 className="student-title m-0" title={nombre}>{nombre}</h5>
-                                <h6 className="student-carrera m-0" title={carrera}>{carrera}</h6>
+                                <h6 className="student-carrera m-0" title={especialidad}>{especialidad}</h6>
                             </div>
                         </div>
                     </div>
@@ -101,22 +100,22 @@ const AlumnoCard = ({ alumno, alEliminar, alEditar }) => {
                         <span 
                             className={badgeClass} 
                             onClick={cambiarEstado}
-                            title="Haz clic para cambiar estado"
+                            title="Haga clic para alternar estado"
                         >
                             <i className="fas fa-circle me-2" style={{fontSize: '0.6rem', opacity: 0.8}}></i> {estado}
                         </span>
                         <div className="student-card-actions">
                             <button 
                                 className="btn btn-sm btn-outline-warning card-action-btn"
-                                onClick={() => alEditar && alEditar()}
-                                title="Modificar datos"
+                                onClick={alEditar}
+                                title="Editar profesor"
                             >
                                 <i className="fas fa-pen"></i>
                             </button>
                             <button 
                                 className="btn btn-sm btn-outline-danger card-action-btn"
                                 onClick={manejarEliminar}
-                                title="Eliminar registro"
+                                title="Eliminar profesor"
                             >
                                 <i className="fas fa-trash"></i>
                             </button>
@@ -128,4 +127,4 @@ const AlumnoCard = ({ alumno, alEliminar, alEditar }) => {
     );
 };
 
-export default AlumnoCard;
+export default ProfesorCard;
