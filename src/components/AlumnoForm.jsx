@@ -22,9 +22,9 @@ const AlumnoForm = ({ recargarAlumnos, alumnoEditando, cancelarEdicion }) => {
                 nombre: alumnoEditando.nombre || '',
                 apellidos: alumnoEditando.apellidos || '',
                 dni: alumnoEditando.dni || '',
-                fecha_nacimiento: alumnoEditando.fecha_nacimiento || '',
+                fecha_nacimiento: alumnoEditando.fecha_nacimiento ? alumnoEditando.fecha_nacimiento.slice(0, 10) : '',
                 email: alumnoEditando.email || '',
-                estado_matricula: alumnoEditando.estado_matricula || 'matriculado',
+                estado_matricula: alumnoEditando.estado_matricula ? alumnoEditando.estado_matricula.toLowerCase() : 'matriculado',
                 icono: alumnoEditando.icono || '👨‍🎓'
             });
         } else {

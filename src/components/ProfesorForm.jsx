@@ -60,7 +60,7 @@ const ProfesorForm = ({ recargarProfesores, profesorEditando, cancelarEdicion })
             const datosEnviados = {
                 ...datosParaLaravel,
                 fecha_nacimiento: '2000-01-01',
-                estado_matricula: 'matriculado'
+                estado_matricula: formulario.estado
             };
             const respuesta = await fetch(url, {
                 method: method,
